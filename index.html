@@ -1,0 +1,275 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Street Burger | Cardápio Digital</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Roboto+Condensed:wght@400;700&display=swap" rel="stylesheet">
+    <style>
+        * { font-family: 'Roboto Condensed', sans-serif; }
+        .display { font-family: 'Bebas Neue', cursive; }
+        .glitch { position: relative; }
+        .glitch::before, .glitch::after { content: attr(data-text); position: absolute; top: 0; left: 0; width: 100%; height: 100%; }
+        .glitch::before { left: 2px; text-shadow: -2px 0 #ff00ff; clip: rect(24px, 550px, 90px, 0); animation: glitch-anim-2 3s infinite linear alternate-reverse; }
+        .glitch::after { left: -2px; text-shadow: -2px 0 #00ffff; clip: rect(85px, 550px, 140px, 0); animation: glitch-anim 2.5s infinite linear alternate-reverse; }
+        @keyframes glitch-anim { 0% { clip: rect(14px, 9999px, 76px, 0); } 20% { clip: rect(89px, 9999px, 21px, 0); } 40% { clip: rect(12px, 9999px, 6px, 0); } 60% { clip: rect(65px, 9999px, 89px, 0); } 80% { clip: rect(23px, 9999px, 67px, 0); } 100% { clip: rect(91px, 9999px, 34px, 0); } }
+        @keyframes glitch-anim-2 { 0% { clip: rect(65px, 9999px, 100px, 0); } 20% { clip: rect(12px, 9999px, 5px, 0); } 40% { clip: rect(87px, 9999px, 32px, 0); } 60% { clip: rect(23px, 9999px, 12px, 0); } 80% { clip: rect(56px, 9999px, 78px, 0); } 100% { clip: rect(34px, 9999px, 12px, 0); } }
+        .neon-text { text-shadow: 0 0 10px #ff006e, 0 0 20px #ff006e, 0 0 40px #ff006e; }
+        .card-hover { transition: all 0.3s ease; }
+        .card-hover:hover { transform: scale(1.05) rotate(-2deg); box-shadow: 0 20px 40px rgba(255,0,110,0.3); }
+        .sticker { transform: rotate(-15deg); box-shadow: 3px 3px 0 rgba(0,0,0,0.2); }
+    </style>
+</head>
+<body class="bg-neutral-900 text-white overflow-x-hidden">
+
+    <!-- Animated Background -->
+    <div class="fixed inset-0 z-0 opacity-20">
+        <div class="absolute inset-0 bg-[url('data:image/svg+xml,%3Csvg width=\'60\' height=\'60\' viewBox=\'0 0 60 60\' xmlns=\'http://www.w3.org/2000/svg\'%3E%3Cg fill=\'none\' fill-rule=\'evenodd\'%3E%3Cg fill=\'%23ff006e\' fill-opacity=\'0.4\'%3E%3Cpath d=\'M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z\'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E')]"></div>
+    </div>
+
+    <!-- Header -->
+    <header class="relative z-50 bg-neutral-900/95 backdrop-blur border-b-4 border-pink-600 sticky top-0">
+        <div class="max-w-7xl mx-auto px-4 py-4 flex justify-between items-center">
+            <div class="display text-4xl md:text-5xl text-pink-500 glitch" data-text="STREET BURGER">STREET BURGER</div>
+            <button onclick="toggleCart()" class="bg-pink-600 px-6 py-3 rounded-none font-bold text-lg hover:bg-pink-500 transition transform hover:-translate-y-1 border-2 border-black shadow-[4px_4px_0_0_rgba(0,0,0,1)]">
+                PEDIDO (<span id="cart-count">0</span>)
+            </button>
+        </div>
+    </header>
+
+    <!-- Hero -->
+    <section class="relative z-10 py-20 px-4 text-center">
+        <h1 class="display text-6xl md:text-8xl mb-4 text-yellow-400 neon-text">HAMBÚRGUERES<br>MONSTRUOSOS</h1>
+        <p class="text-xl md:text-2xl text-gray-300 max-w-2xl mx-auto mb-8">+18 ANOS DE PURA IRRESPONSABILIDADE GASTRONÔMICA</p>
+        <div class="inline-block bg-yellow-400 text-black px-6 py-2 font-bold text-xl sticker border-2 border-black">FRETE GRÁTIS HOJE!</div>
+    </section>
+
+    <!-- Categories -->
+    <div class="relative z-10 max-w-7xl mx-auto px-4 mb-8">
+        <div class="flex flex-wrap gap-4 justify-center">
+            <button onclick="filterCat('all')" class="cat-btn active bg-pink-600 text-white px-8 py-3 font-bold text-xl border-2 border-black shadow-[4px_4px_0_0_rgba(0,0,0,1)] hover:translate-x-[2px] hover:translate-y-[2px] hover:shadow-[2px_2px_0_0_rgba(0,0,0,1)] transition">TODOS</button>
+            <button onclick="filterCat('burgers')" class="cat-btn bg-neutral-800 text-white px-8 py-3 font-bold text-xl border-2 border-neutral-600 hover:border-pink-600 hover:text-pink-500 transition">BURGERS</button>
+            <button onclick="filterCat('acompanhamentos')" class="cat-btn bg-neutral-800 text-white px-8 py-3 font-bold text-xl border-2 border-neutral-600 hover:border-pink-600 hover:text-pink-500 transition">EXTRAS</button>
+            <button onclick="filterCat('bebidas')" class="cat-btn bg-neutral-800 text-white px-8 py-3 font-bold text-xl border-2 border-neutral-600 hover:border-pink-600 hover:text-pink-500 transition">BEBIDAS</button>
+        </div>
+    </div>
+
+    <!-- Menu -->
+    <main class="relative z-10 max-w-7xl mx-auto px-4 pb-20">
+        <div id="menu-grid" class="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
+            <!-- Populated by JS -->
+        </div>
+    </main>
+
+    <!-- Product Modal -->
+    <div id="modal" class="fixed inset-0 bg-black/90 z-50 hidden flex items-center justify-center p-4 backdrop-blur-sm">
+        <div class="bg-neutral-800 border-4 border-pink-600 max-w-2xl w-full max-h-[90vh] overflow-y-auto relative">
+            <button onclick="closeModal()" class="absolute top-4 right-4 bg-pink-600 w-10 h-10 flex items-center justify-center font-bold text-xl hover:bg-pink-500 transition z-10">×</button>
+            <img id="modal-img" src="" class="w-full h-64 md:h-80 object-cover">
+            <div class="p-6 md:p-8">
+                <h2 id="modal-title" class="display text-4xl md:text-5xl text-yellow-400 mb-4"></h2>
+                <p id="modal-desc" class="text-gray-300 text-lg mb-6 leading-relaxed"></p>
+                
+                <div class="bg-neutral-900 p-4 mb-6 border-2 border-neutral-700">
+                    <h3 class="font-bold text-pink-500 mb-3 text-lg">ADICIONAIS (R$ 5,00 CADA):</h3>
+                    <div class="grid grid-cols-2 gap-2">
+                        <label class="flex items-center gap-2 cursor-pointer hover:text-pink-400"><input type="checkbox" class="addon w-5 h-5 accent-pink-600" value="Bacon Extra"> Bacon Extra</label>
+                        <label class="flex items-center gap-2 cursor-pointer hover:text-pink-400"><input type="checkbox" class="addon w-5 h-5 accent-pink-600" value="Queijo Cheddar"> Queijo Cheddar</label>
+                        <label class="flex items-center gap-2 cursor-pointer hover:text-pink-400"><input type="checkbox" class="addon w-5 h-5 accent-pink-600" value="Ovo"> Ovo</label>
+                        <label class="flex items-center gap-2 cursor-pointer hover:text-pink-400"><input type="checkbox" class="addon w-5 h-5 accent-pink-600" value="Jalapeño"> Jalapeño</label>
+                    </div>
+                </div>
+
+                <div class="flex items-center justify-between mb-6">
+                    <div class="flex items-center gap-4 bg-neutral-900 border-2 border-neutral-700 p-2">
+                        <button onclick="adjustQty(-1)" class="w-10 h-10 bg-pink-600 font-bold text-xl hover:bg-pink-500 transition">-</button>
+                        <span id="modal-qty" class="text-2xl font-bold w-8 text-center">1</span>
+                        <button onclick="adjustQty(1)" class="w-10 h-10 bg-pink-600 font-bold text-xl hover:bg-pink-500 transition">+</button>
+                    </div>
+                    <div class="text-right">
+                        <div class="text-gray-400 text-sm">TOTAL</div>
+                        <div id="modal-price" class="display text-4xl text-yellow-400"></div>
+                    </div>
+                </div>
+
+                <button onclick="addToCart()" class="w-full bg-yellow-400 text-black py-4 font-bold text-xl border-4 border-black shadow-[6px_6px_0_0_rgba(255,0,110,1)] hover:translate-x-[3px] hover:translate-y-[3px] hover:shadow-[3px_3px_0_0_rgba(255,0,110,1)] transition display text-2xl">
+                    ADICIONAR AO PEDIDO
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Cart Drawer -->
+    <div id="cart-drawer" class="fixed inset-y-0 right-0 w-full md:w-[500px] bg-neutral-900 border-l-4 border-pink-600 z-50 transform translate-x-full transition-transform duration-300 flex flex-col shadow-2xl">
+        <div class="p-6 border-b-4 border-pink-600 flex justify-between items-center bg-neutral-800">
+            <h2 class="display text-3xl text-yellow-400">SEU PEDIDO</h2>
+            <button onclick="toggleCart()" class="text-3xl hover:text-pink-500 transition">&times;</button>
+        </div>
+        <div id="cart-items" class="flex-1 overflow-y-auto p-6 space-y-4">
+            <div class="text-center text-gray-500 py-12 text-xl">Carrinho vazio... 😢</div>
+        </div>
+        <div class="p-6 bg-neutral-800 border-t-4 border-pink-600">
+            <div class="space-y-2 mb-4 text-lg">
+                <div class="flex justify-between"><span class="text-gray-400">Subtotal:</span><span id="subtotal" class="font-bold">R$ 0,00</span></div>
+                <div class="flex justify-between text-pink-400"><span>Taxa de entrega:</span><span>R$ 8,00</span></div>
+                <div class="flex justify-between display text-3xl text-yellow-400 mt-4 pt-4 border-t-2 border-neutral-700">
+                    <span>TOTAL</span>
+                    <span id="total">R$ 0,00</span>
+                </div>
+            </div>
+            <button onclick="checkout()" class="w-full bg-pink-600 text-white py-4 font-bold text-xl border-4 border-black shadow-[4px_4px_0_0_rgba(255,255,255,0.2)] hover:translate-x-[2px] hover:translate-y-[2px] transition display text-2xl">
+                FINALIZAR PEDIDO
+            </button>
+        </div>
+    </div>
+
+    <script>
+        const products = [
+            { id: 1, name: "MONSTER BURGER", category: "burgers", price: 45, desc: "2 hambúrgueres de 180g, 4 fatias de cheddar, bacon crocante, cebola caramelizada e molho especial da casa. Atenção: pode causar dependência!", img: "https://images.unsplash.com/photo-1568901346375-23c9450c58cd?w=600" },
+            { id: 2, name: "SPICY DEVIL", category: "burgers", price: 42, desc: "Hambúrguer de costela, queijo pepper jack, jalapeños frescos, maionese de chipotle e anéis de cebola empanados. Nível de picante: 🔥🔥🔥", img: "https://images.unsplash.com/photo-1550547660-d9450f859349?w=600" },
+            { id: 3, name: "VEGAN APOCALYPSE", category: "burgers", price: 38, desc: "Hambúrguer de grão-de-bico e cogumelos, queijo vegano, abacate, rúcula e maionese de aquafaba. Surpreendentemente suculento!", img: "https://images.unsplash.com/photo-1520072959219-c595dc870360?w=600" },
+            { id: 4, name: "BATATA NUCLEAR", category: "acompanhamentos", price: 28, desc: "Porção grande de batatas rústicas com pele, cheddar derretido, bacon bits, cebolinha e nosso molho especial de alho.", img: "https://images.unsplash.com/photo-1630384060421-cb20d0e0649d?w=600" },
+            { id: 5, name: "ONION RINGS GIGANTES", category: "acompanhamentos", price: 22, desc: "Anéis de cebola empanados na hora, crocantes por fora e macios por dentro. Acompanha molho barbecue caseiro.", img: "https://images.unsplash.com/photo-1639024471283-03518883512d?w=600" },
+            { id: 6, name: "SHAKE DE OVOMALTINE", category: "bebidas", price: 24, desc: "Milkshake cremoso de baunilha com Ovomaltine e chantilly. Serve 2 pessoas (ou 1 pessoa muito determinada).", img: "https://images.unsplash.com/photo-1572490122747-3968b75cc699?w=600" },
+            { id: 7, name: "REFRIGERANTE ARTESANAL", category: "bebidas", price: 12, desc: "Opções: Cola artesanal, Guaraná natural ou Limonada siciliana. 350ml.", img: "https://images.unsplash.com/photo-1622483767028-3f66f32aef97?w=600" }
+        ];
+
+        let cart = [];
+        let currentItem = null;
+        let qty = 1;
+
+        function renderMenu(cat = 'all') {
+            const grid = document.getElementById('menu-grid');
+            grid.innerHTML = '';
+            const filtered = cat === 'all' ? products : products.filter(p => p.category === cat);
+            
+            filtered.forEach(p => {
+                const div = document.createElement('div');
+                div.className = 'bg-neutral-800 border-4 border-neutral-700 card-hover cursor-pointer overflow-hidden relative group';
+                div.onclick = () => openModal(p);
+                div.innerHTML = `
+                    <div class="relative h-56 overflow-hidden">
+                        <img src="${p.img}" class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110">
+                        <div class="absolute top-0 right-0 bg-yellow-400 text-black font-bold px-4 py-2 text-xl border-l-4 border-b-4 border-black">R$ ${p.price}</div>
+                    </div>
+                    <div class="p-5">
+                        <h3 class="display text-3xl text-pink-500 mb-2">${p.name}</h3>
+                        <p class="text-gray-400 text-sm line-clamp-2 mb-4">${p.desc}</p>
+                        <button class="w-full bg-neutral-700 hover:bg-pink-600 text-white py-3 font-bold border-2 border-neutral-600 transition">PEDIR AGORA →</button>
+                    </div>
+                `;
+                grid.appendChild(div);
+            });
+        }
+
+        function filterCat(cat) {
+            document.querySelectorAll('.cat-btn').forEach(btn => {
+                btn.classList.remove('active', 'bg-pink-600', 'border-black', 'shadow-[4px_4px_0_0_rgba(0,0,0,1)]');
+                btn.classList.add('bg-neutral-800', 'border-neutral-600');
+            });
+            event.target.classList.remove('bg-neutral-800', 'border-neutral-600');
+            event.target.classList.add('active', 'bg-pink-600', 'border-black', 'shadow-[4px_4px_0_0_rgba(0,0,0,1)]');
+            renderMenu(cat);
+        }
+
+        function openModal(item) {
+            currentItem = item;
+            qty = 1;
+            document.getElementById('modal-img').src = item.img;
+            document.getElementById('modal-title').textContent = item.name;
+            document.getElementById('modal-desc').textContent = item.desc;
+            document.getElementById('modal-qty').textContent = qty;
+            updatePrice();
+            document.querySelectorAll('.addon').forEach(cb => cb.checked = false);
+            document.getElementById('modal').classList.remove('hidden');
+        }
+
+        function closeModal() {
+            document.getElementById('modal').classList.add('hidden');
+        }
+
+        function adjustQty(delta) {
+            qty = Math.max(1, qty + delta);
+            document.getElementById('modal-qty').textContent = qty;
+            updatePrice();
+        }
+
+        function updatePrice() {
+            const addons = document.querySelectorAll('.addon:checked').length * 5;
+            const total = (currentItem.price + addons) * qty;
+            document.getElementById('modal-price').textContent = `R$ ${total.toFixed(2)}`;
+        }
+
+        document.querySelectorAll('.addon').forEach(cb => cb.addEventListener('change', updatePrice));
+
+        function addToCart() {
+            const addons = Array.from(document.querySelectorAll('.addon:checked')).map(cb => cb.value);
+            const addonPrice = addons.length * 5;
+            cart.push({
+                ...currentItem,
+                qty,
+                addons,
+                total: (currentItem.price + addonPrice) * qty
+            });
+            updateCartUI();
+            closeModal();
+            
+            // Animation feedback
+            const btn = document.querySelector('button[onclick="toggleCart()"]');
+            btn.classList.add('scale-110', 'bg-green-500');
+            setTimeout(() => btn.classList.remove('scale-110', 'bg-green-500'), 200);
+        }
+
+        function updateCartUI() {
+            const count = cart.reduce((sum, i) => sum + i.qty, 0);
+            document.getElementById('cart-count').textContent = count;
+            
+            const container = document.getElementById('cart-items');
+            if (cart.length === 0) {
+                container.innerHTML = '<div class="text-center text-gray-500 py-12 text-xl">Carrinho vazio... 😢</div>';
+            } else {
+                container.innerHTML = cart.map((item, idx) => `
+                    <div class="bg-neutral-800 border-2 border-neutral-700 p-4 relative">
+                        <button onclick="removeItem(${idx})" class="absolute top-2 right-2 text-pink-500 hover:text-pink-400 font-bold">×</button>
+                        <div class="flex gap-4">
+                            <img src="${item.img}" class="w-20 h-20 object-cover border-2 border-neutral-600">
+                            <div class="flex-1">
+                                <h4 class="display text-xl text-yellow-400">${item.name}</h4>
+                                <p class="text-gray-400 text-sm">Qtd: ${item.qty}</p>
+                                ${item.addons.length ? `<p class="text-pink-500 text-xs mt-1">+ ${item.addons.join(', ')}</p>` : ''}
+                                <p class="text-white font-bold mt-2">R$ ${item.total.toFixed(2)}</p>
+                            </div>
+                        </div>
+                    </div>
+                `).join('');
+            }
+
+            const subtotal = cart.reduce((sum, i) => sum + i.total, 0);
+            const total = subtotal + (cart.length > 0 ? 8 : 0);
+            document.getElementById('subtotal').textContent = `R$ ${subtotal.toFixed(2)}`;
+            document.getElementById('total').textContent = `R$ ${total.toFixed(2)}`;
+        }
+
+        function removeItem(idx) {
+            cart.splice(idx, 1);
+            updateCartUI();
+        }
+
+        function toggleCart() {
+            document.getElementById('cart-drawer').classList.toggle('translate-x-full');
+        }
+
+        function checkout() {
+            if (cart.length === 0) return;
+            const total = document.getElementById('total').textContent;
+            alert(`Pedido confirmado! Total: ${total}\nTempo estimado: 35-45 minutos`);
+            cart = [];
+            updateCartUI();
+            toggleCart();
+        }
+
+        renderMenu();
+    </script>
+</body>
+</html>
